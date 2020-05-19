@@ -1,0 +1,220 @@
+package net.igsoft.catalyst.gradle
+
+import javax.crypto.Cipher
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.spec.SecretKeySpec
+import javax.inject.Inject
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.security.AlgorithmParameters
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+
+class Enc {
+    private static String base64Encode(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes)
+    }
+
+    private static byte[] base64Decode(String property) throws IOException {
+        return Base64.getDecoder().decode(property)
+    }
+
+    private static SecretKeySpec createSecretKey(char[] password, byte[] salt, int iterationCount, int keyLength) {
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512")
+        PBEKeySpec keySpec = new PBEKeySpec(password, salt, iterationCount, keyLength)
+        SecretKey keyTmp = keyFactory.generateSecret(keySpec)
+        return new SecretKeySpec(keyTmp.getEncoded(), "AES")
+    }
+
+    static String encrypt(String property) {
+        Integer p = Math.random() * (mingledChars.length() - 20)
+        SecretKeySpec key = createSecretKey(mingledChars.substring(p, p + 20).toCharArray(),
+                new String("12345678").getBytes(), 40000, 128)
+        Cipher pbeCipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        pbeCipher.init(Cipher.ENCRYPT_MODE, key)
+        AlgorithmParameters parameters = pbeCipher.getParameters()
+        IvParameterSpec ivParameterSpec = parameters.getParameterSpec(IvParameterSpec.class)
+        byte[] cryptoText = pbeCipher.doFinal(property.getBytes("UTF-8"))
+        byte[] iv = ivParameterSpec.getIV()
+        return base64Encode(p.toString().getBytes()) + ":" + base64Encode(iv) + ":" + base64Encode(cryptoText)
+    }
+
+    static String decrypt(String string) {
+        try {
+            Integer p = Integer.parseInt(new String(base64Decode(string.split(":")[0])))
+            String iv = string.split(":")[1]
+            String property = string.split(":")[2]
+            SecretKeySpec key = createSecretKey(mingledChars.substring(p, p + 20).toCharArray(), new String("12345678").getBytes(), 40000, 128)
+            Cipher pbeCipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            pbeCipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(base64Decode(iv)))
+            return new String(pbeCipher.doFinal(base64Decode(property)), "UTF-8")
+        } catch (Exception e) {
+            println e
+            return ""
+        }
+    }
+
+    private static String mingledChars = "asfdbsdaodio83u4oqiaoueq92843uiqerikz;slmv.,zkjf;aslkjfwi4yrpoaijwdoqwy3rupoqi3h4tliwuep'oasjdflsehr;tij" +
+            "sadfjas;ldfjas;ldfjas;ldkfja;slkfdjA;SKCD'FG;W]W4efrglse;'okfa;slkdf';aSLKFD;ESGRJ;SLKJGR';SDKGF';AEK;lajhsdcvlkzud ;qlei3rhalskduhf ;LKWAJEBRKXU"
+}
+
+
+class PropertyHandler {
+
+    String filePath
+
+    PropertyHandler(String filePath) {
+        this.filePath = filePath
+    }
+
+    def propertyMissing(String name) {
+        Properties props = new Properties()
+        File propsFile = new File(filePath)
+        propsFile.withInputStream {
+            props.load it
+        }
+        props."$name"
+    }
+
+    def methodMissing(String name, args) {
+        Properties props = new Properties()
+        File propsFile = new File(filePath)
+
+        props.load propsFile.newDataInputStream()
+        props.setProperty name, args.toString() - '[' - ']'
+        props.store propsFile.newWriter(), null
+    }
+
+}
+
+class UpdatePasswordTask extends DefaultTask {
+    private String initPath
+
+    @Inject
+    UpdatePasswordTask(String initPath) {
+        this.initPath = initPath
+    }
+
+    @TaskAction
+    void updatePassword() {
+        println "Please provide password: "
+        String passwd = System.in.newReader().readLine()
+
+        println "Updating password..."
+        String encrypted = Enc.encrypt(passwd)
+        println encrypted
+
+        PropertyHandler ph = new PropertyHandler(Paths.get(initPath.toString(), "gradle.properties").toString())
+        ph.mavenPassword(encrypted)
+    }
+}
+
+
+void extractFolder(String zipFile, String extractFolder) {
+    int BUFFER = 2048
+    File file = new File(zipFile)
+
+    ZipFile zip = new ZipFile(file)
+    String newPath = extractFolder
+
+    new File(newPath).mkdir()
+    Enumeration zipFileEntries = zip.entries()
+
+    while (zipFileEntries.hasMoreElements()) {
+        ZipEntry entry = (ZipEntry) zipFileEntries.nextElement()
+        String currentEntry = entry.getName()
+        File destFile = new File(newPath, currentEntry)
+        File destinationParent = destFile.getParentFile()
+
+        destinationParent.mkdirs()
+
+        if (!entry.isDirectory()) {
+            BufferedInputStream is = new BufferedInputStream(zip.getInputStream(entry))
+            int currentByte
+            byte[] data = new byte[BUFFER]
+
+            FileOutputStream fos = new FileOutputStream(destFile)
+            BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)
+
+            while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
+                dest.write(data, 0, currentByte)
+            }
+            dest.flush()
+            dest.close()
+            is.close()
+        }
+
+        if (currentEntry.endsWith(".zip")) {
+            extractFolder(destFile.getAbsolutePath())
+        }
+    }
+}
+
+initscript {
+}
+
+rootProject {
+    Path scriptPath = ((File) (initscript.sourceFile)).toPath()
+    Integer pathCount = scriptPath.getNameCount()
+    String initPath = Paths.get(scriptPath.getRoot().toString(), scriptPath.subpath(0, pathCount - 1).toString()).toString()
+    ext.initPath = initPath
+
+    task updatePassword(type: UpdatePasswordTask, constructorArgs: [initPath])
+
+    task showRepos {
+        doLast {
+            println "All repos:"
+            println repositories.collect { it.name }
+        }
+    }
+}
+
+buildscript {
+}
+
+allprojects {
+
+    buildscript {
+        ext.mavenPlainPassword = Enc.decrypt(mavenPassword)
+
+        repositories {
+            mavenLocal()
+            mavenCentral()
+        }
+
+        ext.extractParent = { String parentArtifact, String commonDirPath = "common" ->
+            dependencies.classpath parentArtifact
+
+            afterEvaluate { project ->
+                String commonDir = "${rootProject.projectDir}/$commonDirPath"
+
+                ResolvedArtifact resolvedArtifact = configurations.classpath.resolvedConfiguration.resolvedArtifacts.find {
+                    it.moduleVersion.toString() == parentArtifact
+                }
+
+                if (resolvedArtifact == null) {
+                    throw new IllegalStateException("Can not find artifact: $parentArtifact")
+                }
+
+                println "Resolved artifact: $resolvedArtifact\nCommon dir: $commonDir"
+
+                extractFolder(resolvedArtifact.file.toString(), commonDir)
+
+                //NOTE: below doesn't work
+//                copy() {
+//                  from zipTree(resolvedArtifact.file)
+//                 into commonDir
+//                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+}
