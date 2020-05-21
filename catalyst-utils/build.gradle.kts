@@ -5,7 +5,7 @@ plugins {
 group = rootProject.group
 version = rootProject.version
 
-apply(from = "${extra["commonDir"]}/scripts/java.gradle.kts")
+apply(from = "${rootProject.extra["commonDir"]}/scripts/java.gradle.kts")
 
 tasks.test {
     useJUnitPlatform()

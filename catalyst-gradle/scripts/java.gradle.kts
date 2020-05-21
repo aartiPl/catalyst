@@ -1,4 +1,4 @@
-apply(plugin= "java")
+apply(plugin = "java")
 //apply plugin: 'maven'
 
 //sourceCompatibility = 1.8
@@ -13,7 +13,7 @@ apply(plugin= "java")
 //apply from: "$topazCommonsDir/gradle/scripts/dependencies.gradle"
 //apply from: "$topazCommonsDir/gradle/scripts/codeanalysis.gradle"
 
-apply (from = "${extra["commonDir"]}/scripts/build-info.gradle.kts")      // structure
+apply(from = "${rootProject.extra["commonDir"]}/scripts/build-info.gradle.kts")      // structure
 //apply from: "$topazCommonsDir/gradle/scripts/environment.gradle"    // setting default
 //apply from: "$topazCommonsDir/gradle/scripts/envSetting.gradle"     // modify
 //apply from: "$topazCommonsDir/gradle/scripts/distribution.gradle"   // modify

@@ -1,5 +1,7 @@
 buildscript {
-    extra["commonDir"] = "${project.rootDir}/catalyst-gradle"
+    project.extra["commonDir"] = "${project.rootDir}/catalyst-gradle"
+
+    project.extra.properties.forEach {  p-> println(p) }
 }
 
 group = "com.bbh.ta.topaz"
