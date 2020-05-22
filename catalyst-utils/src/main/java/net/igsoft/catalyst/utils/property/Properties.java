@@ -1,15 +1,8 @@
-/*
-  Author: Marcin Kuszczak
-  Redistributions of source code must retain the above authorship notice
- */
-
 package net.igsoft.catalyst.utils.property;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import net.igsoft.catalyst.utils.converter.StringConverter;
@@ -18,16 +11,12 @@ public class Properties implements Iterable<Map.Entry<String, String>> {
 
     private final Map<String, String> internalProperties;
 
-    public Properties() {
-        this.internalProperties = new HashMap<>();
-    }
-
-    public Properties(ConcurrentHashMap<String, String> properties) {
+    Properties(Map<String, String> properties) {
         this.internalProperties = properties;
     }
 
-    protected Properties(Properties properties) {
-        this.internalProperties = new HashMap<>(properties.internalProperties);
+    public static PropertiesBuilder builder() {
+        return new PropertiesBuilder();
     }
 
     public String getOrThrow(String key) {
@@ -86,9 +75,5 @@ public class Properties implements Iterable<Map.Entry<String, String>> {
     @Override
     public Iterator<Map.Entry<String, String>> iterator() {
         return internalProperties.entrySet().iterator();
-    }
-
-    public static PropertiesBuilder builder() {
-        return new PropertiesBuilder();
     }
 }

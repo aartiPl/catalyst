@@ -1,70 +1,69 @@
-/*
-  Author: Sebastian Katszer
-  Redistributions of source code must retain the above authorship notice
- */
-
 package net.igsoft.catalyst.utils.property;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-public class PropertiesTest {
+@DisplayName("Properties Test")
+class PropertiesTest {
 
     @Test
-    public void testEqualsEquivalenceRelation() {
-        //Given
-        Properties properties1 = new Properties();
-        Properties properties2 = new Properties();
-        Properties properties3 = new Properties();
-        properties1.put("name", "test");
-        properties2.put("name", "test");
-        properties3.put("name", "test");
+    @DisplayName("Test Equals Equivalence Relation")
+    void testEqualsEquivalenceRelation() {
+        // Given
+        Properties properties1 = Properties.builder().withProperty("name", "test").build();
+        Properties properties2 = Properties.builder().withProperty("name", "test").build();
+        Properties properties3 = Properties.builder().withProperty("name", "test").build();
 
-        //When-Then
-        assertThat(properties1.equals(properties1)).isTrue();   //is reflexive
-        assertThat(properties1.equals(properties2)).isTrue();   //is symmetric
+        // When-Then
+        // is reflexive
+        assertThat(properties1.equals(properties1)).isTrue();
+        // is symmetric
+        assertThat(properties1.equals(properties2)).isTrue();
         assertThat(properties2.equals(properties1)).isTrue();
-        assertThat(properties2.equals(properties3)).isTrue();   //is transitive
+        // is transitive
+        assertThat(properties2.equals(properties3)).isTrue();
         assertThat(properties1.equals(properties3)).isTrue();
-        assertThat(properties1.equals(null)).isFalse();         //null reference
-        assertThat(properties1.equals(5)).isFalse();            //wrong type
+        // null reference
+        assertThat(properties1.equals(null)).isFalse();
+        // wrong type
+        assertThat(properties1.equals(5)).isFalse();
     }
 
     @Test
-    public void shouldFailToEqualsForBiggerProperties() {
-        //Given
-        Properties properties1 = new Properties();
-        Properties properties2 = new Properties();
-        properties1.put("name", "test");
-        properties1.put("fail", "something");
-        properties2.put("name", "test");
+    @DisplayName("Should Fail To Equals For Bigger Properties")
+    void shouldFailToEqualsForBiggerProperties() {
+        // Given
+        Properties properties1 =
+                Properties.builder().withProperty("name", "test").withProperty("fail", "something").build();
+        Properties properties2 = Properties.builder().withProperty("name", "test").build();
 
-        //When-Then
+        // When-Then
         assertThat(properties1.equals(properties2)).isFalse();
     }
 
     @Test
-    public void shouldFailToEqualsForDifferentProperties() {
-        //Given
-        Properties properties1 = new Properties();
-        Properties properties2 = new Properties();
-        properties1.put("myName", "test");
-        properties2.put("name", "test");
+    @DisplayName("Should Fail To Equals For Different Properties")
+    void shouldFailToEqualsForDifferentProperties() {
+        // Given
+        Properties properties1 = Properties.builder().withProperty("myName", "test").build();
+        Properties properties2 = Properties.builder().withProperty("name", "test").build();
 
-        //When-Then
+        // When-Then
         assertThat(properties1.equals(properties2)).isFalse();
     }
 
     @Test
-    public void shouldFailToEqualsForDifferentPropertiesValue() {
-        //Given
-        Properties properties1 = new Properties();
-        Properties properties2 = new Properties();
-        properties1.put("name", "tet");
-        properties2.put("name", "test");
+    @DisplayName("Should Fail To Equals For Different Properties Value")
+    void shouldFailToEqualsForDifferentPropertiesValue() {
+        // Given
+        Properties properties1 =
+                Properties.builder().withProperty("name", "tet").withProperty("fail", "something").build();
+        Properties properties2 =
+                Properties.builder().withProperty("name", "test").withProperty("fail", "something").build();
 
-        //When-Then
+        // When-Then
         assertThat(properties1.equals(properties2)).isFalse();
     }
 }

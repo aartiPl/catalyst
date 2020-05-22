@@ -1,10 +1,9 @@
 buildscript {
-    project.extra["commonDir"] = "${project.rootDir}/catalyst-gradle"
-
-    project.extra.properties.forEach {  p-> println(p) }
+    copy {
+        from("${project.rootDir}/catalyst-gradle")
+        into("${project.rootDir}/buildSrc")
+    }
 }
 
-group = "com.bbh.ta.topaz"
-version = "0.6.0-SNAPSHOT"
-
-//val bi = BuildInfo()
+group = "net.igsoft.catalyst"
+version = "0.1.0-SNAPSHOT"
