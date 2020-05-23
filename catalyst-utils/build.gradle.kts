@@ -16,7 +16,4 @@ dependencies {
     implementation("com.google.guava:guava:29.0-jre")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.apache.commons:commons-lang3:3.10")
-
-    testImplementation("org.assertj:assertj-core:3.16.1")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
 }
