@@ -1,0 +1,5 @@
+0.1
+
+* Initial gradle scripts
+* Initial catalyst-utils
+* Initial catalyst-database
