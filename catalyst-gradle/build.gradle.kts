@@ -3,5 +3,4 @@ plugins {
 }
 
 dependencies {
-    //implementation(javaClass<JavaProject>)
 }

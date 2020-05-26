@@ -11,9 +11,9 @@ class BuildInfoResolver {
 //project.ext.localTimestamp = LocalDateTime.now().format(dateTimeFormatter)
         val zoneId = ZoneId.systemDefault().toString()
 
-        val rootGroup = project.group.toString()
-        val rootName = project.name
-        val rootVersionWithSnapshot = project.version.toString()
+        val rootGroup = project.rootProject.group.toString()
+        val rootName = project.rootProject.name
+        val rootVersionWithSnapshot = project.rootProject.version.toString()
         val isRootSnapshotVersion = rootVersionWithSnapshot.toLowerCase().endsWith("-snapshot")
         val rootVersion = if (isRootSnapshotVersion) rootVersionWithSnapshot.substring(0, rootVersionWithSnapshot.lastIndexOf("-")) else rootVersionWithSnapshot
 

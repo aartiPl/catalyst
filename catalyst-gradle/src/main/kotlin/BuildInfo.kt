@@ -1,3 +1,5 @@
+data class BuildInfoPropertyValue(val value: Any, val description: String)
+
 data class BuildInfo(val isRootSnapshotVersion: Boolean,
                      val rootGroup: String,
                      val rootName: String,
