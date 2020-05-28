@@ -1,9 +1,11 @@
 buildscript {
-    apply<JavaProject>()
+    JavaProject.applyPlugins(project)
 }
 
 group = rootProject.group
 version = rootProject.version
+
+JavaProject.apply(project)
 
 dependencies {
     implementation("log4j:log4j:1.2.17")

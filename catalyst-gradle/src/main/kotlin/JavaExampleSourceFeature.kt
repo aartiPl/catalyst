@@ -1,8 +1,10 @@
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
 
-class JavaExampleSourceFeature : Plugin<Project> {
+class JavaExampleSourceFeature : CatalystPlugin {
+    override fun applyPlugins(project: Project) {
+    }
+
     override fun apply(project: Project) {
         val sourceSets = project.properties["sourceSets"] as SourceSetContainer
 
