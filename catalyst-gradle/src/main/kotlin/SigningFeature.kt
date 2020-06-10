@@ -1,7 +1,7 @@
 import org.gradle.api.Project
 import org.gradle.plugins.signing.SigningExtension
 
-class SigningFeature : CatalystPlugin {
+object SigningFeature : CatalystPlugin {
     override fun applyPlugins(project: Project) {
         if (project.hasProperty("signing.keyId")) {
             project.plugins.apply("signing")

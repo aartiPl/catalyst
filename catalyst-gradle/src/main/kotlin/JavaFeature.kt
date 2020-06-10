@@ -8,6 +8,7 @@ import org.gradle.kotlin.dsl.extra
 object JavaFeature : CatalystPlugin {
     override fun applyPlugins(project: Project) {
         project.plugins.apply("java")
+        JarFeature.applyPlugins(project)
     }
 
     override fun apply(project: Project) {
@@ -28,19 +29,7 @@ object JavaFeature : CatalystPlugin {
             from(sourceSets.named("main").get().allSource)
         }
 
-        project.tasks.withType(Jar::class.java).all {
-            val buildInfo = project.extra["buildInfo"] as BuildInfo
-
-            manifest {
-                attributes(mapOf("Environment" to "local",
-                "Implementation-Group" to buildInfo.moduleGroup,
-                "Implementation-Name" to buildInfo.moduleName,
-                "Implementation-Version" to buildInfo.moduleVersionWithSnapshot,
-                "Implementation-BuildId" to buildInfo.buildId,
-                "Created-By" to buildInfo.createdBy,
-                "Created-On"  to "${buildInfo.createdOn} [${buildInfo.creationZone}]"))
-            }
-        }
+        JarFeature.apply(project)
 
         project.artifacts {
             add("archives", project.tasks.named("javadocJar"))
