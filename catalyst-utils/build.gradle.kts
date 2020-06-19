@@ -1,13 +1,55 @@
 buildscript {
     JavaProject.applyPlugins(project)
-    JavaMavenCentralPublishFeature.applyPlugins(project)
+    MavenCentralPublishFeature.applyPlugins(project)
 }
 
 group = rootProject.group
 version = rootProject.version
 
 JavaProject.apply(project)
-JavaMavenCentralPublishFeature.apply(project)
+MavenCentralPublishFeature.apply(project)
+
+project.extensions.configure<PublishingExtension>("publishing") {
+    publications.create<MavenPublication>("mavenJava") {
+
+        println("Archives to be published:")
+        project.configurations.named("archives").get().artifacts.forEach {
+            println(it)
+        }
+
+        project.configurations.named("archives").get().artifacts.forEach {
+            artifact(it)
+        }
+
+        pom {
+            name.set("Catalyst libraries")
+            description.set("Set of libraries for common programming tasks.")
+            url.set("https://github.com/aartiPl/catalyst")
+
+            licenses {
+                license {
+                    name.set("MIT License")
+                    url.set("https://opensource.org/licenses/MIT")
+                }
+            }
+
+            developers {
+                developer {
+                    id.set("aartiPl")
+                    name.set("Marcin Kuszczak")
+                    email.set("marcin.kuszczak.apps@gmail.com")
+                }
+            }
+
+            scm {
+                connection.set("scm:git:git://https://github.com/aartiPl/catalyst.git")
+                developerConnection.set("scm:git:ssh:https://github.com/aartiPl/catalyst.git")
+                url.set("https://github.com/aartiPl/catalyst/tree/master")
+            }
+        }
+    }
+}
+
 
 dependencies {
     implementation("log4j:log4j:1.2.17")

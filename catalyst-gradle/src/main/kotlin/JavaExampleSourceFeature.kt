@@ -1,7 +1,7 @@
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
 
-class JavaExampleSourceFeature : CatalystPlugin {
+object JavaExampleSourceFeature : CatalystPlugin {
     override fun applyPlugins(project: Project) {
     }
 
