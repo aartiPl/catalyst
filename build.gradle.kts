@@ -55,7 +55,6 @@ subprojects {
     afterEvaluate {
         configure<PublishingExtension> {
             publications.named("mavenPublication", MavenPublication::class.java).configure {
-
                 setArtifacts(listOf<Artifact>())
 
                 val map = mutableMapOf<String, PublishArtifact>()
