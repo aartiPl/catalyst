@@ -1,9 +1,11 @@
 buildscript {
-    apply<JavaProject>()
+    JavaProject.applyPlugins(project)
 }
 
 group = rootProject.group
 version = rootProject.version
+
+JavaProject.apply(project)
 
 dependencies {
     implementation("log4j:log4j:1.2.17")
@@ -16,4 +18,6 @@ dependencies {
     implementation("com.google.guava:guava:29.0-jre")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.apache.commons:commons-lang3:3.10")
+
+    //testImplementation("org.assertj:assertj-core")
 }
