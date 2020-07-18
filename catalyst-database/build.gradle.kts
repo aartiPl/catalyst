@@ -2,9 +2,6 @@ buildscript {
     JavaProject.applyPlugins(project)
 }
 
-group = rootProject.group
-version = rootProject.version
-
 JavaProject.apply(project)
 
 dependencies {

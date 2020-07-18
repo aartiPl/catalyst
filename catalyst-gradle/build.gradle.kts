@@ -1,5 +1,12 @@
-plugins {
-    `kotlin-dsl`
+buildscript {
+    repositories {
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+    dependencies {
+        classpath("org.gradle.kotlin:plugins:1.3.6")
+    }
 }
 
 val isBuildSrc = (project.name == "buildSrc")

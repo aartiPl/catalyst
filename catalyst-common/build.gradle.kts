@@ -1,8 +1,9 @@
 buildscript {
-    MavenCentralPublishFeature.applyPlugins(project)
+    FileTreeFeature.applyPlugins(project)
 }
 
-group = rootProject.group
-version = rootProject.version
+FileTreeFeature.apply(project)
 
-MavenCentralPublishFeature.apply(project)
+project.artifacts {
+    add("archives", project.tasks.named("fileTreeJar"))
+}
