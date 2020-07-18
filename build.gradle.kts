@@ -20,8 +20,6 @@ subprojects {
 
     configure<PublishingExtension> {
         publications.create<MavenPublication>("mavenPublication") {
-            setArtifacts(listOf<Artifact>())
-
             pom {
                 name.set("Catalyst libraries")
                 description.set("Set of libraries for common programming tasks.")
