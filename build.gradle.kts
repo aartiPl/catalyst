@@ -18,8 +18,12 @@ subprojects {
 
     MavenCentralPublishFeature.apply(project)
 
+    //NOTE: for publishing artifacts use only 'publishCatalystPublication...'
+    //task 'publish' will try to also publish mavenPublication and will fail
+    //for catalyst-gradle, because it will try to publish both of them.
+
     configure<PublishingExtension> {
-        publications.create<MavenPublication>("mavenPublication") {
+        publications.create<MavenPublication>("catalyst") {
             pom {
                 name.set("Catalyst libraries")
                 description.set("Set of libraries for common programming tasks.")
@@ -49,10 +53,9 @@ subprojects {
         }
     }
 
-
     afterEvaluate {
         configure<PublishingExtension> {
-            publications.named("mavenPublication", MavenPublication::class.java).configure {
+            publications.named("catalyst", MavenPublication::class.java).configure {
                 setArtifacts(listOf<Artifact>())
 
                 val map = mutableMapOf<String, PublishArtifact>()
