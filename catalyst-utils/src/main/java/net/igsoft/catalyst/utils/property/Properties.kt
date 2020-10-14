@@ -1,79 +1,59 @@
-package net.igsoft.catalyst.utils.property;
+package net.igsoft.catalyst.utils.property
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
+import net.igsoft.catalyst.utils.converter.StringConverter
+import java.util.*
+import java.util.function.Function
 
-import net.igsoft.catalyst.utils.converter.StringConverter;
-
-public class Properties implements Iterable<Map.Entry<String, String>> {
-
-    private final Map<String, String> internalProperties;
-
-    Properties(Map<String, String> properties) {
-        this.internalProperties = properties;
+class Properties internal constructor(private val internalProperties: MutableMap<String, String>) : Iterable<Map.Entry<String, String>> {
+    fun getOrThrow(key: String): String {
+        return getOrThrow(key, StringConverter.TO_STRING)
     }
 
-    public static PropertiesBuilder builder() {
-        return new PropertiesBuilder();
+    private fun <T> getOrThrow(key: String, converter: Function<String, T>): T {
+        val value = internalProperties[key] ?: throw IllegalArgumentException("Property '$key' is not defined.")
+        return converter.apply(value)
     }
 
-    public String getOrThrow(String key) {
-        return getOrThrow(key, StringConverter.TO_STRING);
+    fun getOrDefault(key: String, defaultValue: String): String {
+        return getOrDefault(key, defaultValue, StringConverter.TO_STRING)
     }
 
-    private <T> T getOrThrow(String key, Function<String, T> converter) {
-        String value = internalProperties.get(key);
+    private fun <T> getOrDefault(key: String, defaultValue: T, converter: Function<String, T>): T {
+        val value = internalProperties[key] ?: return defaultValue
+        return converter.apply(value)
+    }
 
-        if (value == null) {
-            throw new IllegalArgumentException("Property '" + key + "' is not defined.");
+    operator fun get(key: String): String {
+        return get(key, StringConverter.TO_STRING)
+    }
+
+    private operator fun <T> get(key: String, converter: Function<String, T>): T {
+        return converter.apply(internalProperties.getValue(key))
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
         }
-
-        return converter.apply(value);
-    }
-
-    public String getOrDefault(String key, String defaultValue) {
-        return getOrDefault(key, defaultValue, StringConverter.TO_STRING);
-    }
-
-    private <T> T getOrDefault(String key, T defaultValue, Function<String, T> converter) {
-        String value = internalProperties.get(key);
-
-        if (value == null) {
-            return defaultValue;
+        if (other == null || javaClass != other.javaClass) {
+            return false
         }
-
-        return converter.apply(value);
+        val that = other as Properties
+        return internalProperties == that.internalProperties
     }
 
-    public String get(String key) {
-        return get(key, StringConverter.TO_STRING);
+    override fun hashCode(): Int {
+        return Objects.hash(internalProperties)
     }
 
-    private <T> T get(String key, Function<String, T> converter) {
-        return converter.apply(internalProperties.get(key));
+    override fun iterator(): MutableIterator<Map.Entry<String, String>> {
+        return internalProperties.entries.iterator()
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+    companion object {
+        @JvmStatic
+        fun builder(): PropertiesBuilder {
+            return PropertiesBuilder()
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Properties that = (Properties) o;
-        return Objects.equals(internalProperties, that.internalProperties);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(internalProperties);
-    }
-
-    @Override
-    public Iterator<Map.Entry<String, String>> iterator() {
-        return internalProperties.entrySet().iterator();
     }
 }

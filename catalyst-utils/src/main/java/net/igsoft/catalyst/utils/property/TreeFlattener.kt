@@ -1,29 +1,22 @@
-package net.igsoft.catalyst.utils.property;
+package net.igsoft.catalyst.utils.property
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import org.apache.commons.lang3.StringUtils
 
-import java.util.List;
-import java.util.Map;
-
-public class TreeFlattener {
-
-    public static Map<String, Object> flatten(String prefix, Map<String, Object> propertiesMap, Object treeOrLeaf) {
-        String newPrefix = isBlank(prefix) ? "" : prefix + ".";
-
-        if (treeOrLeaf instanceof Map) {
-            Map<String, Object> map = (Map<String, Object>) treeOrLeaf;
-            map.forEach((key, value) -> flatten(newPrefix + key, propertiesMap, value));
-        } else if (treeOrLeaf instanceof List) {
-            List<Object> list = (List<Object>) treeOrLeaf;
-
-            for (int i = 0; i < list.size(); i++) {
-                flatten(newPrefix + i, propertiesMap, list.get(i));
+object TreeFlattener {
+    fun flatten(prefix: String, propertiesMap: MutableMap<String?, Any?>, treeOrLeaf: Any?): Map<String?, Any?> {
+        val newPrefix = if (StringUtils.isBlank(prefix)) "" else "$prefix."
+        if (treeOrLeaf is Map<*, *>) {
+            val map = treeOrLeaf as Map<String, Any>
+            map.forEach { (key: String, value: Any?) -> flatten(newPrefix + key, propertiesMap, value) }
+        } else if (treeOrLeaf is List<*>) {
+            val list = treeOrLeaf as List<Any>
+            for (i in list.indices) {
+                flatten(newPrefix + i, propertiesMap, list[i])
             }
         } else {
             //Value
-            propertiesMap.put(prefix, treeOrLeaf);
+            propertiesMap[prefix] = treeOrLeaf
         }
-
-        return propertiesMap;
+        return propertiesMap
     }
 }

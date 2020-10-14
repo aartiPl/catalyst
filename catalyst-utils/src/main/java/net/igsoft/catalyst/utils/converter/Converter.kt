@@ -1,9 +1,7 @@
-package net.igsoft.catalyst.utils.converter;
+package net.igsoft.catalyst.utils.converter
 
-import java.util.function.Function;
+import java.util.function.Function
 
-public interface Converter<FROM, TO> extends Function<FROM, TO> {
-
-    @Override
-    TO apply(FROM input);
+fun interface Converter<FROM, TO> : Function<FROM, TO> {
+    override fun apply(input: FROM): TO
 }

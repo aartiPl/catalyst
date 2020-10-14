@@ -1,66 +1,54 @@
-package net.igsoft.catalyst.utils.property;
+package net.igsoft.catalyst.utils.property
 
-import static com.google.common.base.Preconditions.checkState;
+import com.google.common.base.Preconditions
+import org.apache.commons.lang3.StringUtils
+import java.util.*
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
-public class PropertiesBuilder {
-    private final Map<String, String> internalMap = new HashMap<>();
-    private boolean emptyValuesAllowed = false;
-    private boolean trimmedValues = true;
-
-    public PropertiesBuilder withProperty(String key, String value) {
-        internalMap.put(key, value);
-        return this;
+class PropertiesBuilder {
+    private val internalMap: MutableMap<String, String> = HashMap()
+    private var emptyValuesAllowed = false
+    private var trimmedValues = true
+    fun withProperty(key: String, value: String): PropertiesBuilder {
+        internalMap[key] = value
+        return this
     }
 
-    public PropertiesBuilder withMap(Map<String, String> propertyMap) {
-        for (Map.Entry<String, String> entry: propertyMap.entrySet()) {
-            internalMap.put(entry.getKey(), entry.getValue());
+    fun withMap(propertyMap: Map<String, String>): PropertiesBuilder {
+        for ((key, value) in propertyMap) {
+            internalMap[key] = value
         }
-        return this;
+        return this
     }
 
-    public PropertiesBuilder withProperties(Properties properties) {
-        for (Map.Entry<String, String> property: properties) {
-            internalMap.put(property.getKey(), property.getValue());
+    fun withProperties(properties: Properties): PropertiesBuilder {
+        for ((key, value) in properties) {
+            internalMap[key] = value
         }
-        return this;
+        return this
     }
 
-    public PropertiesBuilder withEmptyValuesAllowed() {
-        this.emptyValuesAllowed = true;
-        return this;
+    fun withEmptyValuesAllowed(): PropertiesBuilder {
+        emptyValuesAllowed = true
+        return this
     }
 
-    public PropertiesBuilder withNotTrimmedValues() {
-        this.trimmedValues = false;
-        return this;
+    fun withNotTrimmedValues(): PropertiesBuilder {
+        trimmedValues = false
+        return this
     }
 
-    public Properties build() {
-        Map<String, String> map = new HashMap<>();
-
-        for(Map.Entry<String, String> entry: internalMap.entrySet()) {
-            String key = StringUtils.trimToNull(entry.getKey().trim());
-            String value = entry.getValue();
-
-            checkState(key != null, "Keys can not be null, empty or only whitespace!");
-
+    fun build(): Properties {
+        val map: MutableMap<String, String> = HashMap()
+        for (entry in internalMap.entries) {
+            val key = StringUtils.trimToNull(entry.key.trim { it <= ' ' })
+            var value = entry.value
+            Preconditions.checkState(key != null, "Keys can not be null, empty or only whitespace!")
             if (trimmedValues && value != null) {
-                value = value.trim();
+                value = value.trim { it <= ' ' }
             }
-
-            if (!emptyValuesAllowed && value == null) {
-                throw new IllegalStateException("Value for key '" + key + "' can not be null!");
-            }
-
-            map.put(key, value);
+            check(!(!emptyValuesAllowed && value == null)) { "Value for key '$key' can not be null!" }
+            map[key] = value
         }
-
-        return new Properties(map);
+        return Properties(map)
     }
 }

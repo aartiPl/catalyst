@@ -1,20 +1,31 @@
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.artifacts.repositories.ArtifactRepository
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.extra
+import org.gradle.kotlin.dsl.ScriptHandlerScope.*
+import java.net.URI
 
 object KotlinFeature : CatalystPlugin {
-    val kotlin_version = "1.3.72"
+    const val kotlinVersion = "1.4.10"
 
     override fun applyPlugins(project: Project) {
-        project.plugins.apply("org.jetbrains.kotlin.jvm")
+        project.repositories.maven {
+            url = URI.create("https://plugins.gradle.org/m2/")
+        }
+
+        project.buildscript.dependencies.add("classpath", "org.gradle.kotlin:plugins:1.4.10")
 
         JarFeature.applyPlugins(project)
     }
 
     override fun apply(project: Project) {
+        //project.buildscript.dependencies.add("classpath", "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        project.plugins.apply("org.jetbrains.kotlin.jvm")
+
         project.tasks.withType(JavaCompile::class.java).all {
             sourceCompatibility = JavaVersion.VERSION_1_8.toString()
             targetCompatibility = JavaVersion.VERSION_1_8.toString()
@@ -42,20 +53,3 @@ object KotlinFeature : CatalystPlugin {
         //project.dependencies.add("implementation", kotlin("stdlib-jdk8"))
     }
 }
-
-//
-//val compileKotlin: KotlinCompile by tasks
-//compileKotlin.kotlinOptions {
-//    jvmTarget = "1.8"
-//}
-//val compileTestKotlin: KotlinCompile by tasks
-//compileTestKotlin.kotlinOptions {
-//    jvmTarget = "1.8"
-//}
-//import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-//
-//plugins {
-//    kotlin("jvm") version "1.3.72"
-//}
-//implementation(kotlin("stdlib-jdk8"))
