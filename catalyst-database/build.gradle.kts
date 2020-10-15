@@ -21,5 +21,7 @@ dependencies {
     implementation("com.google.guava:guava:29.0-jre")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.apache.commons:commons-lang3:3.10")
+
+    implementation("io.github.microutils:kotlin-logging:1.12.0")
     implementation("com.zaxxer:HikariCP:3.4.5")
 }
