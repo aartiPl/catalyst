@@ -1,8 +1,14 @@
-buildscript {
-    JavaProject.applyPlugins(project)
+plugins {
+    kotlin("jvm") version "1.4.10"
 }
 
-JavaProject.apply(project)
+//buildscript {
+//    KotlinProject.applyPlugins(project)
+//}
+
+KotlinProject.apply(project)
+//apply(plugin = "org.jetbrains.kotlin.jvm")
+//apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
 dependencies {
     implementation("log4j:log4j:1.2.17")
@@ -15,4 +21,7 @@ dependencies {
     implementation("com.google.guava:guava:29.0-jre")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.apache.commons:commons-lang3:3.10")
+
+    implementation("io.github.microutils:kotlin-logging:1.12.0")
+    implementation("com.zaxxer:HikariCP:3.4.5")
 }

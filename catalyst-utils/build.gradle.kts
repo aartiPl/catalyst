@@ -1,11 +1,15 @@
-buildscript {
-    JavaProject.applyPlugins(project)
+plugins {
+    kotlin("jvm") version "1.4.10"
 }
+
+//buildscript {
+//    KotlinProject.applyPlugins(project)
+//}
 
 group = rootProject.group
 version = rootProject.version
 
-JavaProject.apply(project)
+KotlinProject.apply(project)
 
 dependencies {
     implementation("log4j:log4j:1.2.17")
